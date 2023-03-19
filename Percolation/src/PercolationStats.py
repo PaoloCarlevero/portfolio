@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from Percolation import Percolation
+from src.Percolation import Percolation
 
 
 class PercolationStats:
@@ -19,7 +19,7 @@ class PercolationStats:
             rows = columns = self.grid
 
         for i in range(self.trials):
-            if i % (self.trials/100) == 0:
+            if i % (self.trials/20) == 0:
                 print(f"{i*100/self.trials}%")
             percolation = Percolation(rows, columns)
             percolation.percolates()
@@ -35,11 +35,6 @@ class PercolationStats:
     def confidence_intervall(self) -> float:
         return round((1.96*(np.std(self.percolation_results) / self.trials**0.5))*100, 2)
 
-if __name__ == "__main__":
-    ps = PercolationStats(trials=1_000, grid=100)
-
-    ps.percolates()
-
-    print(f"{ps.mean}% \u00B1{ps.confidence_intervall}")
-    plt.hist(ps.percolation_results)
-    plt.show()
+    @property
+    def result(self):
+        return f"{self.mean} \u00B1 {self.confidence_intervall}" 
