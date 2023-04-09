@@ -7,7 +7,6 @@ class Dijkstra:
         self.values_stack = Stack()
         self.operators_stack = Stack()
         self.operator_precedence = {'+': 0, '-': 0, '*': 1, '/': 1}  
-        
     
     def solve(self, expression: str):
 
@@ -30,14 +29,14 @@ class Dijkstra:
                 while (     self.operators_stack.is_full
                         and not self.operators_stack.top == '('
                         and self.operator_precedence[item] <= self.operator_precedence[self.operators_stack.top]
-                    ):
+                      ):
                     operator = self.operators_stack.pop()
                     first_num = self.values_stack.pop()
                     second_num = self.values_stack.pop()
                     self.values_stack.push(eval(f'{second_num}{operator}{first_num}'))
                 self.operators_stack.push(item)
 
-        while not self.operators_stack.is_empty:
+        while self.operators_stack.is_full:
             operator = self.operators_stack.pop()
             first_num = self.values_stack.pop()
             second_num = self.values_stack.pop()
