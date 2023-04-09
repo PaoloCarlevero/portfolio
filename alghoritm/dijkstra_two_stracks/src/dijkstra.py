@@ -29,7 +29,8 @@ class Dijkstra:
             else:
                 while (     self.operators_stack.is_full
                         and not self.operators_stack.top == '('
-                        and self.operator_precedence[item] <= self.operator_precedence[self.operators_stack.top]):
+                        and self.operator_precedence[item] <= self.operator_precedence[self.operators_stack.top]
+                    ):
                     operator = self.operators_stack.pop()
                     first_num = self.values_stack.pop()
                     second_num = self.values_stack.pop()
