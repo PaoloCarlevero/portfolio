@@ -1,0 +1,62 @@
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM records) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_records.csv' WITH CSV DELIMITER ',' HEADER;"
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM population) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_population.csv' WITH CSV DELIMITER ',' HEADER;"
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM cases) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_cases.csv' WITH CSV DELIMITER ',' HEADER;"
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM deaths) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_deaths.csv' WITH CSV DELIMITER ',' HEADER;"
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM tests) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_tests.csv' WITH CSV DELIMITER ',' HEADER;"
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM records) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_records.csv' WITH CSV DELIMITER ',' HEADER;"
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM hospitalizations) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_hospitalizations.csv' WITH CSV DELIMITER ',' HEADER;"
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM vaccinations) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_vaccinations.csv' WITH CSV DELIMITER ',' HEADER;"
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM mortality_risk) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_mortality_risk.csv' WITH CSV DELIMITER ',' HEADER;"
+
+
+-- Saving latest record for each location
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy (SELECT * FROM covid_vaccination_data WHERE record_id IN (SELECT DISTINCT ON (location) record_id FROM covid_vaccination_data)) TO '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/processed_data/owid_covid_data_latest.csv' WITH CSV DELIMITER ',' HEADER;"

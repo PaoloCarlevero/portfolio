@@ -1,0 +1,206 @@
+CREATE DATABASE covid_vaccinations_data;
+
+\c covid_vaccination_data;
+
+CREATE TABLE covid_vaccination_data(
+ record_id SERIAL PRIMARY KEY, 
+ iso_code VARCHAR(16),
+ continent VARCHAR(16),
+ location VARCHAR(32),
+ date DATE,
+ total_cases REAL,
+ new_cases REAL,
+ new_cases_smoothed REAL,
+ total_deaths REAL,
+ new_deaths REAL,
+ new_deaths_smoothed REAL,
+ total_cases_per_million REAL,
+ new_cases_per_million REAL,
+ new_cases_smoothed_per_million REAL,
+ total_deaths_per_million REAL,
+ new_deaths_per_million REAL,
+ new_deaths_smoothed_per_million REAL,
+ reproduction_rate REAL,
+ icu_patients REAL,
+ icu_patients_per_million REAL,
+ hosp_patients REAL,
+ hosp_patients_per_million REAL,
+ weekly_icu_admissions REAL,
+ weekly_icu_admissions_per_million REAL,
+ weekly_hosp_admissions REAL,
+ weekly_hosp_admissions_per_million REAL,
+ total_tests REAL,
+ new_tests REAL,
+ total_tests_per_thousand REAL,
+ new_tests_per_thousand REAL,
+ new_tests_smoothed REAL,
+ new_tests_smoothed_per_thousand REAL,
+ positive_rate REAL,
+ tests_per_case REAL,
+ tests_units VARCHAR(16),
+ total_vaccinations REAL,
+ people_vaccinated REAL,
+ people_fully_vaccinated REAL,
+ total_boosters REAL,
+ new_vaccinations REAL,
+ new_vaccinations_smoothed REAL,
+ total_vaccinations_per_hundred REAL,
+ people_vaccinated_per_hundred REAL,
+ people_fully_vaccinated_per_hundred REAL,
+ total_boosters_per_hundred REAL,
+ new_vaccinations_smoothed_per_million REAL,
+ new_people_vaccinated_smoothed REAL,
+ new_people_vaccinated_smoothed_per_hundred REAL,
+ stringency_index REAL,
+ population_density REAL,
+ median_age REAL,
+ aged_65_older REAL,
+ aged_70_older REAL,
+ gdp_per_capita REAL,
+ extreme_poverty REAL,
+ cardiovasc_death_rate REAL,
+ diabetes_prevalence REAL,
+ female_smokers REAL,
+ male_smokers REAL,
+ handwashing_facilities REAL,
+ hospital_beds_per_thousand REAL,
+ life_expectancy REAL,
+ human_development_index REAL,
+ population REAL,
+ excess_mortality_cumulative_absolute REAL,
+ excess_mortality_cumulative REAL,
+ excess_mortality REAL,
+ excess_mortality_cumulative_per_million REAL
+);
+
+\q
+
+PGPASSWORD=postgres psql \
+ -h localhost \
+ -U postgres \
+ -d covid_vaccination_data \
+ -c "\copy covid_vaccination_data(iso_code,continent,location,date,total_cases,new_cases,new_cases_smoothed,total_deaths,new_deaths,new_deaths_smoothed,total_cases_per_million,new_cases_per_million,new_cases_smoothed_per_million,total_deaths_per_million,new_deaths_per_million,new_deaths_smoothed_per_million,reproduction_rate,icu_patients,icu_patients_per_million,hosp_patients,hosp_patients_per_million,weekly_icu_admissions,weekly_icu_admissions_per_million,weekly_hosp_admissions,weekly_hosp_admissions_per_million,total_tests,new_tests,total_tests_per_thousand,new_tests_per_thousand,new_tests_smoothed,new_tests_smoothed_per_thousand,positive_rate,tests_per_case,tests_units,total_vaccinations,people_vaccinated,people_fully_vaccinated,total_boosters,new_vaccinations,new_vaccinations_smoothed,total_vaccinations_per_hundred,people_vaccinated_per_hundred,people_fully_vaccinated_per_hundred,total_boosters_per_hundred,new_vaccinations_smoothed_per_million,new_people_vaccinated_smoothed,new_people_vaccinated_smoothed_per_hundred,stringency_index,population_density,median_age,aged_65_older,aged_70_older,gdp_per_capita,extreme_poverty,cardiovasc_death_rate,diabetes_prevalence,female_smokers,male_smokers,handwashing_facilities,hospital_beds_per_thousand,life_expectancy,human_development_index,population,excess_mortality_cumulative_absolute,excess_mortality_cumulative,excess_mortality,excess_mortality_cumulative_per_million
+) FROM '/home/paolo/github_repo/portfolio/dashboard/covid_vaccinations/data_lake/raw_data/owid-covid-data.csv' with (format csv,header true, delimiter ',');"
+
+CREATE OR REPLACE VIEW records AS (
+ SELECT
+  record_id, 
+  iso_code,
+  continent,
+  location,
+  date
+ FROM
+  covid_vaccination_data
+);
+
+CREATE OR REPLACE VIEW population AS (
+ SELECT
+  record_id,
+  population,
+  population_density,
+  median_age,
+  life_expectancy,
+  aged_65_older,
+  aged_70_older,
+  gdp_per_capita,
+  extreme_poverty,
+  human_development_index,
+  stringency_index
+ FROM
+  covid_vaccination_data
+);
+
+CREATE OR REPLACE VIEW cases AS (
+ SELECT 
+  record_id,
+  total_cases,
+  new_cases,
+  new_cases_smoothed,
+  total_cases_per_million,
+  new_cases_per_million,
+  new_cases_smoothed_per_million,
+  reproduction_rate
+ FROM
+  covid_vaccination_data
+);
+
+CREATE OR REPLACE VIEW deaths AS (
+ SELECT
+  record_id,
+  total_deaths,
+  new_deaths,
+  new_deaths_smoothed,
+  total_deaths_per_million,
+  new_deaths_per_million,
+  new_deaths_smoothed_per_million
+ FROM
+  covid_vaccination_data
+);
+
+CREATE OR REPLACE VIEW tests AS (
+ SELECT
+  record_id,
+  total_tests,
+  new_tests,
+  total_tests_per_thousand,
+  new_tests_per_thousand,
+  new_tests_smoothed,
+  new_tests_smoothed_per_thousand,
+  positive_rate,
+  tests_per_case,
+  tests_units
+ FROM
+  covid_vaccination_data
+);
+
+CREATE OR REPLACE VIEW hospitalizations AS (
+ SELECT
+  record_id,
+  icu_patients,
+  icu_patients_per_million,
+  hosp_patients,
+  hosp_patients_per_million,
+  weekly_icu_admissions,
+  weekly_icu_admissions_per_million,
+  weekly_hosp_admissions,
+  weekly_hosp_admissions_per_million
+ FROM
+  covid_vaccination_data
+);
+
+
+CREATE OR REPLACE VIEW vaccinations AS (
+ SELECT
+  record_id,
+  total_vaccinations,
+  people_vaccinated,
+  people_fully_vaccinated,
+  total_boosters,
+  new_vaccinations,
+  new_vaccinations_smoothed,
+  total_vaccinations_per_hundred,
+  people_vaccinated_per_hundred,
+  people_fully_vaccinated_per_hundred,
+  total_boosters_per_hundred,
+  new_vaccinations_smoothed_per_million,
+  new_people_vaccinated_smoothed,
+  new_people_vaccinated_smoothed_per_hundred
+ FROM
+  covid_vaccination_data
+);
+
+CREATE OR REPLACE VIEW mortality_risk AS (
+ SELECT
+  record_id,
+  cardiovasc_death_rate,
+  diabetes_prevalence,
+  female_smokers,
+  male_smokers,
+  handwashing_facilities,
+  excess_mortality_cumulative_absolute,
+  excess_mortality_cumulative,
+  excess_mortality,
+  excess_mortality_cumulative_per_million
+ FROM
+  covid_vaccination_data
+);
