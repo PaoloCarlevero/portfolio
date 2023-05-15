@@ -1,4 +1,4 @@
-![Dashboard preview](netflix_dashboard.png)
+![Dashboard preview](netflix_data_dashboard.png)
 
 To see my dashboard on Tableau Public, click on the link:
 
