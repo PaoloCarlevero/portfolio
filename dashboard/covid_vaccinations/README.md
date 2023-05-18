@@ -1,4 +1,4 @@
-![Dashboard preview](covid_data_dashboard.twbx)
+![Dashboard preview](covid_data_dashboard.png)
 
 To see my dashboard on Tableau Public, click on the link:
 
