@@ -5,20 +5,36 @@ from datetime import timedelta
 class DataPreprocessor:
 
     def __init__(self):
-        self.pupulation_columns = ['iso_code','continent','population_density', 'median_age', 'aged_65_older', 'aged_70_older',
-       'gdp_per_capita', 'extreme_poverty', 'cardiovasc_death_rate',
-       'diabetes_prevalence', 'female_smokers', 'male_smokers',
-       'handwashing_facilities', 'hospital_beds_per_thousand',
-       'life_expectancy', 'human_development_index', 'population']
+        self.location_columns = ['iso_code','continent','location', 'location_type']
+        self.pupulation_columns = [
+            'population_density', 'median_age', 'aged_65_older', 'aged_70_older',
+            'gdp_per_capita', 'extreme_poverty', 'cardiovasc_death_rate',
+            'diabetes_prevalence', 'female_smokers', 'male_smokers',
+            'handwashing_facilities', 'hospital_beds_per_thousand',
+            'life_expectancy', 'human_development_index', 'population'
+            ]
+        self.covid_related_cumulative_columns = [
+            'total_cases', 'total_deaths', 'total_cases_per_million', 'total_deaths_per_million', 'positive_rate',
+            'tests_per_case', 'tests_units', 'total_vaccinations', 'people_vaccinated', 'people_fully_vaccinated',
+            'total_boosters', 'total_vaccinations_per_hundred', 'people_vaccinated_per_hundred',
+            'people_fully_vaccinated_per_hundred', 'total_boosters_per_hundred'
+            ]
 
     def pipeline(self, df):
         df['date'] = pd.to_datetime(df['date'])
         self.drop_out_of_bound_dates(df)
         self.add_missing_records(df)
-        df['location_type'] = np.NaN
         df['location_type'] = df['location'].apply(self.get_location_type)
-        for column in self.pupulation_columns:
-            df[column] = self.fillna_pairs_based(df, 'location', column)
+        df.sort_values(['location_type', 'continent', 'location', 'date'], inplace=True)
+        df.reset_index(drop=True, inplace = True)
+        df[self.location_columns] = df.groupby('location')[self.location_columns].ffill().bfill()
+        df[self.pupulation_columns] = df.groupby('location')[self.pupulation_columns].ffill().bfill()
+        df[self.covid_related_cumulative_columns] = df.groupby('location')[self.covid_related_cumulative_columns].ffill()
+        df['continent'].fillna(df['location'], inplace = True)
+        df['iso_code'].replace(to_replace='NAM', value='NTA', inplace=True)
+        df['iso_code'].replace(to_replace='SAM', value='STA', inplace=True)
+        df['iso_code'] = df['iso_code'].str[-3:]
+
 
         return df
 
@@ -40,7 +56,7 @@ class DataPreprocessor:
 
         
     def add_missing_records(self, df):
-        """ Add missing records.
+        """Add missing records.
         
         Create a tuple of all unique locations in the dataset.
         Iterate each date and check if there are records about all locations in the tuple,
@@ -82,15 +98,3 @@ class DataPreprocessor:
             return 'world'
         else:
             return 'country'
-        
-    def fillna_pairs_based(self, df, key_col, value_col):
-
-        pairs = df[[key_col, value_col]].drop_duplicates().dropna()
-        pairs = dict(zip(pairs[key_col], pairs[value_col]))
-
-        df[value_col] = df.apply(
-            lambda row: pairs[row[key_col]] if (pd.isnull(row[value_col]) and row[key_col] in pairs.keys()) else row[value_col],
-            axis=1
-        )
-
-        return df[value_col]
